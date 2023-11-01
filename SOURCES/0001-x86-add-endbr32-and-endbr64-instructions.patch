@@ -1,0 +1,66 @@
+From eac51dc1b6eb89e00ed2294e39949ad056287d1e Mon Sep 17 00:00:00 2001
+From: Wim Taymans <wtaymans@redhat.com>
+Date: Fri, 19 Jul 2019 16:18:04 +0200
+Subject: [PATCH] x86: add endbr32 and endbr64 instructions
+
+Issue endbr instructions at the start of generated functions to
+make IBT (indirect branch tracking) work.
+
+Resolves #17
+---
+ orc/orcx86.c     | 4 ++++
+ orc/orcx86insn.c | 2 ++
+ orc/orcx86insn.h | 2 ++
+ 3 files changed, 8 insertions(+)
+
+diff --git a/orc/orcx86.c b/orc/orcx86.c
+index 02e6b34..d4cc086 100644
+--- a/orc/orcx86.c
++++ b/orc/orcx86.c
+@@ -452,6 +452,9 @@ orc_x86_emit_prologue (OrcCompiler *compiler)
+   orc_compiler_append_code(compiler,"%s:\n", compiler->program->name);
+   if (compiler->is_64bit) {
+     int i;
++
++    orc_x86_emit_cpuinsn_none (compiler, ORC_X86_endbr64);
++
+     for(i=0;i<16;i++){
+       if (compiler->used_regs[ORC_GP_REG_BASE+i] &&
+           compiler->save_regs[ORC_GP_REG_BASE+i]) {
+@@ -459,6 +462,7 @@ orc_x86_emit_prologue (OrcCompiler *compiler)
+       }
+     }
+   } else {
++    orc_x86_emit_cpuinsn_none (compiler, ORC_X86_endbr32);
+     orc_x86_emit_push (compiler, 4, X86_EBP);
+     if (compiler->use_frame_pointer) {
+       orc_x86_emit_mov_reg_reg (compiler, 4, X86_ESP, X86_EBP);
+diff --git a/orc/orcx86insn.c b/orc/orcx86insn.c
+index 9d93197..a9bdd9f 100644
+--- a/orc/orcx86insn.c
++++ b/orc/orcx86insn.c
+@@ -254,6 +254,8 @@ static const OrcSysOpcode orc_x86_opcodes[] = {
+   { "pshufw", ORC_X86_INSN_TYPE_IMM8_MMXM_MMX, 0, 0x00, 0x0f70 },
+   { "movq", ORC_X86_INSN_TYPE_MMXM_MMX, 0, 0x00, 0x0f6f },
+   { "movq", ORC_X86_INSN_TYPE_MMXM_MMX_REV, 0, 0x00, 0x0f7f },
++  { "endbr32", ORC_X86_INSN_TYPE_NONE, 0, 0xf3, 0x0f1efb },
++  { "endbr64", ORC_X86_INSN_TYPE_NONE, 0, 0xf3, 0x0f1efa },
+ };
+ 
+ static void
+diff --git a/orc/orcx86insn.h b/orc/orcx86insn.h
+index d109c95..864e5d6 100644
+--- a/orc/orcx86insn.h
++++ b/orc/orcx86insn.h
+@@ -277,6 +277,8 @@ typedef enum {
+   ORC_X86_pshufw,
+   ORC_X86_movq_mmx_load,
+   ORC_X86_movq_mmx_store,
++  ORC_X86_endbr32,
++  ORC_X86_endbr64,
+ } OrcX86Opcode;
+ 
+ enum {
+-- 
+2.21.0
+
