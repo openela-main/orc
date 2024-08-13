@@ -1,6 +1,6 @@
 Name:		orc
 Version:	0.4.28
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	The Oil Run-time Compiler
 
 Group:		System Environment/Libraries
@@ -10,6 +10,7 @@ Source0:	http://gstreamer.freedesktop.org/src/orc/%{name}-%{version}.tar.xz
 
 # upstream patches
 Patch0:		0001-x86-add-endbr32-and-endbr64-instructions.patch
+Patch1:         0001-Use-vasprintf-if-available-for-error-messages-and-ot.patch
 
 BuildRequires:	gtk-doc, libtool
 
@@ -53,6 +54,7 @@ The Orc compiler, to produce optimized code.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 gtkdocize --copy
 NOCONFIGURE=1 autoreconf -vif
 
@@ -105,6 +107,10 @@ make check
 
 
 %changelog
+* Wed Jul 31 2024 Wim Taymans <wtaymans@redhat.com> 0.4.28-4
+- Add patch for CVE-2024-40897
+- Resolves: RHEL-50710
+
 * Thu Sep 12 2019 Wim Taymans <wtaymans@redhat.com> 0.4.28-3
 - x86: add endbr32 and endbr64 instructions
 - Resolves: rhbz#1693292
