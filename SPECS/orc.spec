@@ -1,11 +1,13 @@
 Name:		orc
 Version:	0.4.31
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	The Oil Run-time Compiler
 
 License:	BSD
 URL:		http://cgit.freedesktop.org/gstreamer/orc/
 Source0:	http://gstreamer.freedesktop.org/src/orc/%{name}-%{version}.tar.xz
+
+Patch0001:      0001-Use-vasprintf-if-available-for-error-messages-and-ot.patch
 
 BuildRequires:	meson >= 0.47.0
 BuildRequires:  gcc
@@ -46,7 +48,7 @@ The Orc compiler, to produce optimized code.
 
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %meson -D default_library=shared
@@ -88,6 +90,10 @@ rm -rf %{buildroot}/%{_libdir}/orc
 
 
 %changelog
+* Wed Jul 31 2024 Wim Taymans <wtaymans@redhat.com> 0.4.31-7
+- Add patch for CVE-2024-40897
+- Resolves: RHEL-50701
+
 * Mon Aug 09 2021 Mohan Boddu <mboddu@redhat.com> - 0.4.31-6
 - Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
   Related: rhbz#1991688
