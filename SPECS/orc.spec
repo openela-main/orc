@@ -1,6 +1,6 @@
 Name:		orc
 Version:	0.4.31
-Release:	7%{?dist}
+Release:	8%{?dist}
 Summary:	The Oil Run-time Compiler
 
 License:	BSD
@@ -90,9 +90,13 @@ rm -rf %{buildroot}/%{_libdir}/orc
 
 
 %changelog
+* Wed Jul 31 2024 Wim Taymans <wtaymans@redhat.com> 0.4.31-8
+- Bump version for upgrade with z-stream
+- Resolves: RHEL-50700
+
 * Wed Jul 31 2024 Wim Taymans <wtaymans@redhat.com> 0.4.31-7
 - Add patch for CVE-2024-40897
-- Resolves: RHEL-50701
+- Resolves: RHEL-50700
 
 * Mon Aug 09 2021 Mohan Boddu <mboddu@redhat.com> - 0.4.31-6
 - Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
